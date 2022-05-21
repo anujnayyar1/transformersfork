@@ -212,12 +212,15 @@ class TextGenerationPipeline(Pipeline):
         else:
             in_b = input_ids.shape[0]
         prompt_text = model_inputs.pop("prompt_text")
-        generated_sequence = self.model.generate(input_ids=input_ids, **generate_kwargs)  # BS x SL
+        generated_sequence = self.model.generate(input_ids=input_ids, **generate_kwargs)# BS x SL
         out_b = generated_sequence.shape[0]
+        print(generated_sequence)
         if self.framework == "pt":
             generated_sequence = generated_sequence.reshape(in_b, out_b // in_b, *generated_sequence.shape[1:])
+            print(generated_sequence)
         elif self.framework == "tf":
             generated_sequence = tf.reshape(generated_sequence, (in_b, out_b // in_b, *generated_sequence.shape[1:]))
+            print(generated_sequence)
         return {"generated_sequence": generated_sequence, "input_ids": input_ids, "prompt_text": prompt_text}
 
     def postprocess(self, model_outputs, return_type=ReturnType.FULL_TEXT, clean_up_tokenization_spaces=True):
